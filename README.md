@@ -4,13 +4,16 @@
 
 跨平台：Windows / Linux 桌面端，Android 手机端。
 
-![应用图标](assets/icon/ymlive_logo.png)
-
+<!-- ![应用图标](assets/icon/ymlive_logo.png) -->
+<div align="center">
+  <img src="assets/icon/ymlive_logo.png" width="400" height="400" />
+</div>
 ---
 
 ## 目录
 
 - [YM Live Stream](#ym-live-stream)
+  - [](#)
   - [目录](#目录)
   - [功能特性](#功能特性)
   - [平台支持情况](#平台支持情况)
@@ -32,7 +35,6 @@
     - [长期](#长期)
   - [关于](#关于)
   - [免责声明](#免责声明)
-  - [致谢](#致谢)
 
 ---
 
@@ -92,7 +94,6 @@
 https://live.bilibili.com/440006       ← 直播间链接
 live.bilibili.com/440006               ← 省略协议
 https://b23.tv/8P8sN3S                 ← 分享短链
-【闲聊-哔哩哔哩直播】 https://b23.tv/8P8sN3S   ← 完整分享文本
 ```
 
 
@@ -191,10 +192,9 @@ flutter build windows --release
 |---|---|
 | 应用名 | `YM Live Stream` |
 | 创作者 | `YanMo` |
-| GitHub | `https://github.com/yanmo/ym_live_stream` <!-- TODO: 确认真实仓库地址 --> |
-| Telegram 讨论组 | `https://t.me/your_group` <!-- TODO: 替换成真实链接 --> |
-| Discord 服务器 | `https://discord.gg/your_invite` <!-- TODO: 替换成真实邀请链接 --> |
-| 问题反馈 | `https://github.com/yanmo/ym_live_stream/issues` <!-- TODO --> |
+| QQ群组 | 287861755 |
+| Telegram 讨论组 | `https://t.me/+OWI9FPLB2CcwMzI1` |
+| 问题反馈 | `https://github.com/yanmo-null/ym_live_stream/issues` |
 | Android 包名 | `io.github.yanmo.ymlivestream` |
 | 版权 | Copyright © 2026 YanMo |
 
@@ -206,38 +206,5 @@ flutter build windows --release
 
 - 所有直播流、房间信息均来自各平台公开接口，版权归各平台及主播所有
 - 请勿将本项目用于商业用途，或任何侵犯平台权益的行为
-- 使用本项目可能违反某些平台的服务条款，请自行评估风险
 - 因使用本项目产生的一切后果由使用者自行承担
 
-本项目与哔哩哔哩、斗鱼、抖音均无关联，未获官方授权。
-
----
-
-## 致谢
-
-- [media_kit](https://github.com/media-kit/media-kit) —— 跨平台视频播放
-- [Flutter](https://flutter.dev/) —— 跨平台 UI 框架
-- [GetX](https://github.com/jonataslaw/getx) —— 状态管理与路由
-- [Hive](https://github.com/isar/hive) —— 本地键值存储
-
----
-
-<!--
-给维护者的备注（发布前删除本段）：
-
-1. 还剩 `your_group` / `your_invite` 两处占位（Telegram、Discord），
-   以及 GitHub 仓库地址需要与真实仓库核对一次
-2. 「关于」页的信息在 lib/presentation/home_page.dart 顶部的 _kApp* 常量里，
-   改这里时记得和本文档的「关于」表格同步
-3. 升版本号要同时改两处：
-   - pubspec.yaml 的 version
-   - home_page.dart 的 _kAppVersion
-4. TODO 里带 [x] 的已完成项记得更新
-5. 应用图标是 assets/icon/ymlive_logo.png，改完跑 dart run flutter_launcher_icons
-
-【包名】io.github.yanmo.ymlivestream —— 已经定死，不要在发布后修改。
-改它等于换一个新应用，老用户收不到更新。涉及三处：
-   - android/app/build.gradle.kts 的 namespace / applicationId
-   - android/app/src/main/kotlin/io/github/yanmo/ymlivestream/MainActivity.kt
-   - macos/Runner/Configs/AppInfo.xcconfig 的 PRODUCT_BUNDLE_IDENTIFIER
--->
