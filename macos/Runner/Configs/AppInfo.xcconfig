@@ -1,0 +1,20 @@
+// Application-level settings for the Runner target.
+//
+// This may be replaced with something auto-generated from metadata (e.g., pubspec.yaml) in the
+// future. If not, the values below would default to using the project name when this becomes a
+// 'flutter create' template.
+
+// The application's name. By default this is also the title of the Flutter window.
+//
+// 和 Android 的 android:label、README、关于页保持一致，统一用带空格的显示名。
+// 注意：这个值同时也是 .app 的文件名，所以会生成 "YM Live Stream.app"。
+PRODUCT_NAME = YM Live Stream
+
+// The application's bundle identifier
+//
+// 和 Android 的 applicationId 用同一套反写域名（没有自有域名就用 io.github.<用户名>），
+// 这样两个平台的包名一眼能看出是同一个项目。
+PRODUCT_BUNDLE_IDENTIFIER = io.github.yanmo.ymlivestream
+
+// The copyright displayed in application information
+PRODUCT_COPYRIGHT = Copyright © 2025 yanmo. All rights reserved.
