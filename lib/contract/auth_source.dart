@@ -76,6 +76,9 @@ abstract class AuthSource {
 }
 
 /// 登录实现的注册表。
+///
+/// 和 `LiveSourceRegistry` 同样的思路：UI 不直接 new 平台登录类，
+/// 谁想用谁注册；没注册 = 这个平台的登录功能不可用（UI 会把入口隐藏）。
 class AuthSourceRegistry {
   AuthSourceRegistry._();
 

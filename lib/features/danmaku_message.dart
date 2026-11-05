@@ -1,6 +1,9 @@
 import 'package:ym_live_stream/features/live_common.dart';
 
 /// 三端（斗鱼 / 抖音 / B 站）统一的弹幕消息模型。
+///
+/// 三个平台的弹幕客户端各自解析自己的协议，但吐给 UI 的都归一成这个结构，
+/// 这样右侧栏的渲染代码只认一种数据，不用再按平台分支。
 class DanmakuMessage {
   /// 发送者昵称
   final String nickname;
@@ -14,7 +17,8 @@ class DanmakuMessage {
   /// 收到时间（本地时钟），用于排序和「同秒去重」
   final DateTime receivedAt;
 
-  DanmakuMessage({required this.nickname, required this.content, this.site, DateTime? receivedAt}) : receivedAt = receivedAt ?? DateTime.now();
+  DanmakuMessage({required this.nickname, required this.content, this.site, DateTime? receivedAt})
+    : receivedAt = receivedAt ?? DateTime.now();
 
   @override
   String toString() => '[$nickname] $content';

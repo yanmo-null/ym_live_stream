@@ -1,3 +1,11 @@
+/// 假的后端实现：让开源仓库在不接真实后端时也能跑起来看界面。
+///
+/// 返回写死的房间信息、一条不可播放的流地址、以及几条循环推送的假弹幕。
+/// 视频区会是黑屏（地址无效），但页面结构、控制栏、弹幕列表、关注功能
+/// 全都能正常操作 —— 足够让人看懂这个项目长什么样。
+///
+/// 【只在没有注册真实实现时使用】
+/// 见 main.dart 里的兜底逻辑：某个平台没注册 LiveSource，就用 MockLiveSource。
 library;
 
 import 'dart:async';
@@ -27,6 +35,12 @@ class MockLiveSource implements LiveSource {
     return null;
   }
 
+  //别名问题，类似虎牙
+  @override
+  Future<String?> resolveRoomIdFromAlias(String alias) async {
+    return null;
+  }
+
   @override
   String? extractUrlFromText(String text) {
     // 演示版不认任何平台链接，统一返回 null，走「无法识别」提示
@@ -34,13 +48,13 @@ class MockLiveSource implements LiveSource {
   }
 
   @override
-  Future<LiveRoomInfo?> fetchRoomBrief(int roomId) async {
+  Future<LiveRoomInfo?> fetchRoomBrief(String roomId) async {
     final detail = await fetchRoom(roomId);
     return detail?.roomInfo;
   }
 
   @override
-  Future<LiveRoomDetail?> fetchRoom(int roomId) async {
+  Future<LiveRoomDetail?> fetchRoom(String roomId) async {
     // 模拟一点网络延迟，让加载动画能被看到
     await Future.delayed(const Duration(milliseconds: 600));
 
@@ -65,19 +79,25 @@ class MockLiveSource implements LiveSource {
         LIVE_VIDEO_QUALITY.values.firstWhere((q) => q.name.startsWith(site.name.replaceFirst('LIVE_SITE_', '')), orElse: () => LIVE_VIDEO_QUALITY.UNKNOWN):
             stream,
       },
+      live_site: LIVE_SITE_E.LIVE_SITE_DOUYIN,
     )..live_site = site;
 
     return LiveRoomDetail(roomInfo: room, defaultStream: stream);
   }
 
   @override
-  Future<LiveStreamInfo?> fetchStream(int roomId, LIVE_VIDEO_QUALITY quality) async {
+  Future<LiveStreamInfo?> fetchStream(String roomId, LIVE_VIDEO_QUALITY quality) async {
     final detail = await fetchRoom(roomId);
     return detail?.defaultStream;
   }
 
   @override
-  DanmakuConnection? connectDanmaku(int roomId, {required void Function(String nickname, String content) onMessage, void Function(Object error)? onError}) {
+  DanmakuConnection? connectDanmaku(
+    String roomId, {
+    required void Function(String nickname, String content) onMessage,
+    void Function(Object error)? onError,
+    LiveRoomInfo? roomInfo,
+  }) {
     var index = 0;
     // 每 2 秒推一条，循环播放
     final timer = Timer.periodic(const Duration(seconds: 2), (_) {

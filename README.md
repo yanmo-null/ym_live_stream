@@ -6,14 +6,18 @@
 
 <!-- ![应用图标](assets/icon/ymlive_logo.png) -->
 <div align="center">
-  <img src="assets/icon/ymlive_logo.png" width="400" height="400" />
+  <img src="assets/show_example/home_page.png" width="320" height="200" />
+  <img src="assets/show_example/follow_list.png" width="320" 
+  height="200" />
+  <img src="assets/show_example/live_room_page.png" width="320" height="200" />
+  <img src="assets/show_example/setting_page.png" width="320" height="200" />
 </div>
+
 ---
 
 ## 目录
 
 - [YM Live Stream](#ym-live-stream)
-  - [](#)
   - [目录](#目录)
   - [功能特性](#功能特性)
   - [平台支持情况](#平台支持情况)
@@ -26,9 +30,7 @@
     - [抖音](#抖音)
   - [构建与运行](#构建与运行)
     - [环境要求](#环境要求)
-    - [拉取依赖](#拉取依赖)
     - [运行](#运行)
-    - [打包](#打包)
   - [TODO 计划](#todo-计划)
     - [近期](#近期)
     - [中期](#中期)
@@ -42,11 +44,8 @@
 
 - **三平台直播观看**：哔哩哔哩、斗鱼、抖音，一个应用全搞定
 - **多种清晰度切换**：从标清到蓝光/原画，按平台自动展示可用档位
-- **线路切换**：同一清晰度下有多条流时（FLV / HLS，H.264 / H.265）可手动切换
-- **实时弹幕**：右侧弹幕栏滚动显示，全屏时可叠加到画面上
 - **分享链接直接粘贴**：从手机 App 复制的整段分享文本，粘进搜索框就能看
 - **关注列表**：收藏常看的直播间，主页单独展示「特别关注」
-- **全屏 / 适配窗口**：桌面端可窗口全屏，也可只让画面铺满窗口不动窗口本身
 - **本地存储**：关注列表存在本地 Hive 数据库，不联网、不上传
 
 ---
@@ -65,12 +64,13 @@
 
 ### 直播平台
 
-| 平台 | 直播观看 | 清晰度切换 | 线路切换 | 实时弹幕 | 分享链接解析 |
-|---|---|---|---|---|---|
-| 哔哩哔哩 | ✅ | ✅ 原画/蓝光/超清/2K/4K/杜比 | ✅ | ✅ | ✅ `b23.tv` 短链 |
-| 斗鱼 | ✅ | ✅ 原画/蓝光/超清/高清 | ✅ | ✅ | ✅ 直播间链接 |
-| 抖音 | ✅ | ✅ 原画/蓝光/超清/高清/标清 | ✅ | ✅ | ✅ `v.douyin.com` 短链 |
-
+| 平台 | 直播观看 | 清晰度切换 | 线路切换 | 实时弹幕 |
+|---|---|---|---|---|
+| 哔哩哔哩 | ✅ | ✅ 原画/蓝光/超清/2K/4K/杜比 | ✅ | ✅ |
+| 斗鱼 | ✅ | ✅ 原画/蓝光/超清/高清 | ✅ | ✅ |
+| 抖音 | ✅ | ✅ 原画/蓝光/超清/高清/标清 | ✅ | ✅ |
+| 虎牙 | ✅ | ✅ 蓝光20M/蓝光8M/蓝光4M/超清/高清 | ✅ | ✅ |
+| 快手 | ✅ | ✅ 蓝光 至臻/蓝光/超清/高清 | ✅ | ✅ |
 > 清晰度的实际可用档位由主播的推流设置决定，应用只展示该房间真实存在的档位。
 
 ### 房间号规则
@@ -80,6 +80,8 @@
 | 哔哩哔哩 | 3 ~ 12 位数字 | 短号可只有 3 位（如 `732`） |
 | 斗鱼 | 3 ~ 12 位数字 | 常见 3 ~ 8 位 |
 | 抖音 | 6 ~ 20 位数字 | 实际使用的是 `web_rid`（通常 12 位） |
+| 虎牙 | 6位数字或固定字符 | 六位数字 "546540" 或字符串 "chuhe" |
+| 抖音 | 8 ~ 20 位字符串 | 例如: "KPL704668133"、"ji0808ji" |
 
 ---
 ## 各平台检索范例
@@ -143,39 +145,27 @@ https://v.douyin.com/l_VT4cS1IM8/             ← 分享短链
 - Flutter SDK `^3.12.2`（Dart `^3.12.2`）
 - Android 构建：Android SDK，`minSdk 21`
 - Windows 构建：Visual Studio 2022（含 C++ 桌面开发）
-
-### 拉取依赖
-
-```bash
-flutter pub get
-```
-
 ### 运行
 
 ```bash
 # 桌面端
-flutter run -d windows    # 或 macos / linux
+flutter clean;
+flutter pub get;
+flutter run -d windows;    # 或 macos / linux
 
 # Android
+flutter clean;
+flutter pub get;
 flutter run -d <device-id>
-```
-
-### 打包
-
-```bash
-# Android
-flutter build apk --release
-
-# Windows
-flutter build windows --release
 ```
 
 ## TODO 计划
 
 ### 近期
 
-- [ ] 增加快手和虎牙平台支持
-- [ ] 增加弹幕横屏滚动模式
+- [x] 增加快手和虎牙平台支持
+- [ ] 增加观看平台录播或添加个人录播的功能
+- [ ] 支持TV端APP
 
 ### 中期
 

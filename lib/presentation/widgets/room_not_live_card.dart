@@ -5,6 +5,15 @@ import 'package:ym_live_stream/features/live_common.dart';
 import 'package:ym_live_stream/features/live_site_meta.dart';
 import 'package:ym_live_stream/presentation/controller/home_page_control.dart';
 
+/// 未开播 / 被封禁时的信息卡（在首页弹出，不进播放页）。
+///
+/// 布局（紧凑的一行三段）：
+///   ⬤  主播名字           [♡ 关注]
+///  头像 🎮 平台            [☆ 特别关注]
+///      ● 未开播           [   关闭   ]
+///
+/// 为什么在首页弹而不是进播放页再弹：进播放页要跑一遍起播流程，
+/// 用户会看到「正在连接直播间」闪一下再被打回来，体验很差。
 class RoomNotLiveCard extends StatefulWidget {
   final BlockedRoomInfo data;
 
@@ -18,6 +27,10 @@ class RoomNotLiveCard extends StatefulWidget {
 }
 
 class _RoomNotLiveCardState extends State<RoomNotLiveCard> {
+  /// 关注状态从本地存储读，改完用 setState 刷新。
+  ///
+  /// 这里刻意不挂到 HomeController 的响应式状态上：
+  /// 信息卡是一次性的临时弹窗，跟着页面那两个列表重建没有意义。
   bool _favorited = false;
   bool _special = false;
 
@@ -33,6 +46,7 @@ class _RoomNotLiveCardState extends State<RoomNotLiveCard> {
     final site = widget.data.site;
     setState(() {
       _favorited = store.contains(site, id);
+      // 特别关注必须依附于关注，没关注时一律 false
       _special = _favorited && store.isSpecialFollowed(site, id);
     });
   }
@@ -65,6 +79,7 @@ class _RoomNotLiveCardState extends State<RoomNotLiveCard> {
     final site = widget.data.site;
 
     if (!_favorited) {
+      // 还没关注：一步到位「关注 + 特别关注」
       await store.add(
         FavoriteRoom(
           roomId: id,
@@ -87,16 +102,19 @@ class _RoomNotLiveCardState extends State<RoomNotLiveCard> {
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      // 默认 dialog 会撑很大，这里给个固定宽度，卡片才会紧凑
       child: Container(
         width: 330,
         padding: const EdgeInsets.fromLTRB(16, 16, 12, 12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // ---------- 左：头像 ----------
             _buildAvatar(),
 
             const SizedBox(width: 12),
 
+            // ---------- 中：名字 / 平台 / 状态 ----------
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -131,6 +149,14 @@ class _RoomNotLiveCardState extends State<RoomNotLiveCard> {
 
             const SizedBox(width: 10),
 
+            // ---------- 右：三个按钮 ----------
+            // 按钮紧凑一些：这里是信息卡，不是主操作区。
+            //
+            // 【必须给固定宽度】这个 Column 是外层 Row 的子项，横向约束是松的
+            // （0..infinity）。如果只用 crossAxisAlignment: stretch，
+            // 它会要求子项取无限宽，抛
+            //   "BoxConstraints forces an infinite width"
+            // 所以这里显式定宽，「三个按钮等宽」也顺带保证了。
             SizedBox(
               width: 100,
               child: Column(
@@ -174,6 +200,8 @@ class _RoomNotLiveCardState extends State<RoomNotLiveCard> {
         style: OutlinedButton.styleFrom(
           foregroundColor: color,
           side: BorderSide(color: color.withValues(alpha: 0.45)),
+          // 内边距收到 6：按钮宽度是按「已特别关注」这种最长文案估的，
+          // 之前用 8 时刚好差 0.5px 就溢出（描边还要占 2px）
           padding: const EdgeInsets.symmetric(horizontal: 6),
           minimumSize: Size.zero,
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -185,6 +213,10 @@ class _RoomNotLiveCardState extends State<RoomNotLiveCard> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[Icon(icon, size: 13), const SizedBox(width: 3)],
+            // 【必须可收缩】按钮宽度是定值（外层 SizedBox(width: 100)），
+            // 而「已特别关注」这种最长文案 + 图标 + 内边距会顶到边界，
+            // 字体度量稍有差异就溢出零点几像素。给 Flexible + ellipsis 兜底，
+            // 宁可极端情况下出现省略号，也不要整块报 RenderFlex overflow。
             Flexible(
               child: Text(
                 label,

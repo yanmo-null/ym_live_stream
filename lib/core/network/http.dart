@@ -3,8 +3,12 @@ import "package:http/http.dart" as http;
 
 import 'package:ym_live_stream/core/utils/utils.dart';
 
+/// 兼容旧调用点：UA 的唯一来源是 UtilTools.default_user_agent（会话级、进程内一致），
+/// 不要再在这里写第二份硬编码 UA，否则改 UA 会漏改一半。
 String get kDesktopUserAgent => UtilTools.default_user_agent;
 
+/// 各平台的基础头，参考平台自己页面请求的形态；
+/// referer 由调用方按房间号传进来（带 referer 的请求在平台看来才"正常"）。
 Map<String, String> browser_headers({
   String? referer,
   bool navigation = true, // true=像地址栏导航(HTML)，false=像页面内 XHR
@@ -67,6 +71,18 @@ Future<void> _backoff(int attempt) async {
   await Future.delayed(Duration(milliseconds: backoffMs));
 }
 
+// ===================== 对外 API =====================
+//
+// 【为什么不再用 _sendWithRetry(() => ...) 这种回调包一层】
+// 之前的写法是：
+//   return _sendWithRetry(() => http.get(uri, headers: headers));
+// 重试逻辑和"到底发的是什么请求"被拆到两处，读代码要来回跳。
+// 现在每个函数自己写循环，看得见完整的"发请求 → 判成功 → 退避重试"，
+// 代价是三个函数各有一段相似的循环 —— 这点重复比回调更值得。
+//
+// 共用的部分（节流、成功判定、退避间隔、超时）仍然抽成上面几个小函数，
+// 重复的只是那个 for 循环骨架本身。
+
 /// GET 一个地址，只要响应正文（最常见的用法）。
 Future<String> http_get_url_content(String url, {Map<String, String>? headers}) async {
   // 复用 http_get_response：节流、重试、超时都在那边做，
@@ -122,7 +138,16 @@ Future<http.Response> http_get_response(String url, {Map<String, String>? header
   throw Exception('Request failed after $_kMaxAttempts attempts: $lastError');
 }
 
-///用来读 3xx 响应头里的 Location。
+/// 【不跟随重定向的 GET】用来读 3xx 响应头里的 Location。
+///
+/// 为什么需要单独一个函数：dart:io 的 HttpClient 默认 followRedirects = true，
+/// 打开后 302 会被自动消化成最终地址，**Location 头就拿不到了**。
+/// 抖音的短链（v.douyin.com/xxxx）正是靠 Location 一路跳转到真实直播间，
+/// 所以这里必须自己建客户端并关掉自动重定向。
+///
+/// 【这里不做"成功才返回"的重试】302/301 对我们恰恰是正常结果，
+/// 按 2xx 才算成功来判会把它当成失败反复重试。网络层异常（连不上、超时）
+/// 仍然重试，因为那种情况下重试是有意义的。
 Future<http.Response> http_get_no_redirect(String url, {Map<String, String>? headers}) async {
   final uri = Uri.parse(url);
   await _throttle(uri);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:get/get.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -17,7 +16,9 @@ import 'package:ym_live_stream/core/route_path.dart';
 import 'package:ym_live_stream/contract/auth_source.dart';
 import 'package:ym_live_stream/contract/live_source.dart';
 
-import 'package:ym_live_stream/presentation/ym_live_pages.dart';
+import 'package:ym_live_stream/presentation/app_router.dart';
+import 'package:ym_live_stream/presentation/favorites_scope.dart';
+import 'package:ym_live_stream/presentation/settings_scope.dart';
 
 Future<void> main() async {
   runZonedGuarded(
@@ -88,16 +89,16 @@ class YMLiveStream extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+    // 开源版和私有版共用同一套路由/状态基础设施（go_router + SettingsScope），
+    // 区别只在 main() 里注册的后端：开源版不注册，UI 落回 lib/mock/。
+    return MaterialApp.router(
       title: 'YMLive Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-
-      //RoutePath.p_liveroom,
-      initialRoute: DevBoot.enabled ? DevBoot.bootRoute : RoutePath.p_home,
-      getPages: YMLivePages.all_routes,
-
-      // home: const LiveStreamPage(),
-      builder: (context, child) => FlutterSmartDialog(child: child),
+      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      routerConfig: AppRouter.router,
+      builder: (context, child) {
+        final content = FlutterSmartDialog(child: child ?? const SizedBox.shrink());
+        return SettingsScope(child: FavoritesScope(child: content));
+      },
     );
   }
 }

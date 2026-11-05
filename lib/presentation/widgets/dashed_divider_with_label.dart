@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+/// 一条虚线 + 中间嵌入文字的分割线。
+///
+/// 用 Row(虚线, 文字, 虚线) 实现，而不是 CustomPainter 盖文字：
+/// 文字宽度自适应，不需要手动算遮挡区域。
 class DashedDividerWithLabel extends StatelessWidget {
   final String label;
   final Color color;
@@ -45,6 +49,7 @@ class DashedDividerWithLabel extends StatelessWidget {
       );
     }
 
+    // 透明按钮：只靠文字 + 悬停/按下反馈，不画底色和边框
     return TextButton(
       onPressed: onLabelTap,
       style: TextButton.styleFrom(
@@ -79,6 +84,7 @@ class _DashedLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // 宽度可能是无限的（放在某些 Row/Column 里），退化成空占位避免报错
         if (!constraints.maxWidth.isFinite) return const SizedBox.shrink();
         return CustomPaint(
           size: Size(constraints.maxWidth, strokeWidth),
